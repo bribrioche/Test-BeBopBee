@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TileGenerator : MonoBehaviour
 {
@@ -22,6 +23,11 @@ public class TileGenerator : MonoBehaviour
     private bool isSwapping = false;
     private List<Tile> tilesToSwap = new List<Tile>();
     private bool gameStart = false;
+
+    public int swapCount;
+    public float swapDelay = 0.5f;
+
+    public InputField inputFieldSwaps;
 
 
 
@@ -317,6 +323,88 @@ public class TileGenerator : MonoBehaviour
                 tileGrid[newRow, newCol] = newTile;
             }
         }
+    }
+    public void LaunchSimulation()
+    {
+        swapCount = int.Parse(inputFieldSwaps.text);
+        StartCoroutine(SimulateSwaps());
+    }
+
+
+    private IEnumerator SimulateSwaps()
+    {
+        isSwapping = true;
+
+        for (int i = 0; i < swapCount; i++)
+        {
+            // Random choice of a position in the grid
+            int row = Random.Range(0, rows);
+            int col = Random.Range(0, columns);
+
+            // Check if the position is valid and the tile exists
+            if (IsValidPosition(row, col) && tileGrid[row, col] != null)
+            {
+                // Check valid neighbor positions
+                List<Vector2Int> validNeighborPositions = new List<Vector2Int>();
+
+                if (IsValidPosition(row - 1, col)) // Top
+                    validNeighborPositions.Add(new Vector2Int(row - 1, col));
+
+                if (IsValidPosition(row + 1, col)) // Bottom
+                    validNeighborPositions.Add(new Vector2Int(row + 1, col));
+
+                if (IsValidPosition(row, col - 1)) // Left
+                    validNeighborPositions.Add(new Vector2Int(row, col - 1));
+
+                if (IsValidPosition(row, col + 1)) // Right
+                    validNeighborPositions.Add(new Vector2Int(row, col + 1));
+
+                if (validNeighborPositions.Count > 0)
+                {
+                    // Choose a neighbor
+                    int randomIndex = Random.Range(0, validNeighborPositions.Count);
+                    Vector2Int neighborPos = validNeighborPositions[randomIndex];
+
+                    // Swap
+                    SwapTiles(row, col, neighborPos.x, neighborPos.y);
+
+                    // Delay befor next swap
+                    yield return new WaitForSeconds(swapDelay);
+                }
+            }
+        }
+
+        isSwapping = false;
+    }
+
+    private void SwapTiles(int row1, int col1, int row2, int col2)
+    {
+        // Check that the positions are valid and that the tiles exist
+        if (IsValidPosition(row1, col1) && IsValidPosition(row2, col2) && tileGrid[row1, col1] != null && tileGrid[row2, col2] != null)
+        {
+            // Swap tiles
+            Tile tile1 = tileGrid[row1, col1].GetComponent<Tile>();
+            Tile tile2 = tileGrid[row2, col2].GetComponent<Tile>();
+
+            int tempRow = tile1.row;
+            int tempCol = tile1.column;
+            tile1.row = tile2.row;
+            tile1.column = tile2.column;
+            tile2.row = tempRow;
+            tile2.column = tempCol;
+
+            tileGrid[row1, col1] = tile2.gameObject;
+            tileGrid[row2, col2] = tile1.gameObject;
+
+            tile1.MoveToNewPosition(GetTilePosition(tile1.row, tile1.column));
+            tile2.MoveToNewPosition(GetTilePosition(tile2.row, tile2.column));
+        }
+    }
+
+    // Check if a position is valid in the grid
+    private bool IsValidPosition(int row, int col)
+    {
+        return row >= 0 && row < rows && col >= 0 && col < columns;
     }
 }
 
