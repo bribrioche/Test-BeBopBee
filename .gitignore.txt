@@ -1,0 +1,40 @@
+# Unity-specific
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+Library/PackageCache
+
+# Autres fichiers Unity générés
+/*.unityproj
+/*.apk
+/*.unitypackage
+/*.DS_Store
+
+# Fichiers de solution Visual Studio (le cas échéant)
+/*.sln
+/*.suo
+/*.csproj
+/*.pidb
+/*.userprefs
+/*.booproj
+
+# Cache Visual Studio Code (le cas échéant)
+/.vscode/
+
+# Cache Rider (le cas échéant)
+/*.sln.DotSettings.user
+/*.sln.DotSettings
+
+# Fichiers macOS
+/.DS_Store
+/.AppleDouble
+/.LSOverride
+
+# Fichiers de bureau
+/[Dd]esktop.ini
+
